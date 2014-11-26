@@ -47,8 +47,24 @@
         [self.sizingCell removeConstraint:widthConstraint];
 
         // It seems the width constraint isn't taken into account as the size returned is the label's fitting size
-        NSLog(@"%@", NSStringFromCGSize(itemSize));
+        NSLog(@"A - %@", NSStringFromCGSize(itemSize));
         
+    }
+    
+    // Try using adding a width constraint to the sizig cell and geting it's system layout size, relaying out before asking for the size
+    {
+        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.sizingCell attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:itemSize.width];
+        [self.sizingCell addConstraint:widthConstraint];
+
+        // Trying to re-layout after adding the constraint fails
+        [self.sizingCell setNeedsLayout];
+        [self.sizingCell layoutIfNeeded];
+        
+        itemSize = [self.sizingCell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+        
+        [self.sizingCell removeConstraint:widthConstraint];
+        
+        NSLog(@"B - %@", NSStringFromCGSize(itemSize));
     }
 
     // TODO - Change the layout so the item's width and height are correct for different screen sizes
