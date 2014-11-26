@@ -36,6 +36,20 @@
     
     itemSize.width = floorf( (self.view.bounds.size.width - (cellSpacing * (cellsPerRow + 1))) / cellsPerRow);
     itemSize.height = 100; // TODO use the sizing cell to determine the height for the calculated width
+    
+    // Try using adding a width constraint to the sizig cell and geting it's system layout size
+    {
+        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.sizingCell attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:itemSize.width];
+        [self.sizingCell addConstraint:widthConstraint];
+        
+        itemSize = [self.sizingCell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+        
+        [self.sizingCell removeConstraint:widthConstraint];
+
+        // It seems the width constraint isn't taken into account as the size returned is the label's fitting size
+        NSLog(@"%@", NSStringFromCGSize(itemSize));
+        
+    }
 
     // TODO - Change the layout so the item's width and height are correct for different screen sizes
 //     UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
