@@ -33,61 +33,25 @@
     CGFloat const cellsPerRow = 2.0;
     CGFloat const cellSpacing = 10.0;
     CGSize itemSize = CGSizeZero;
-    
+
     itemSize.width = floorf( (self.view.bounds.size.width - (cellSpacing * (cellsPerRow + 1))) / cellsPerRow);
-    itemSize.height = 100; // TODO use the sizing cell to determine the height for the calculated width
+    itemSize.height = 100;
     
-    // Try using adding a width constraint to the sizig cell and geting it's system layout size
+    // Adding a width constraint to a view in the sizing cell
     {
-        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.sizingCell attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:itemSize.width];
-        [self.sizingCell addConstraint:widthConstraint];
+        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.sizingCell.topView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:itemSize.width];
+        [self.sizingCell.topView addConstraint:widthConstraint];
         
         itemSize = [self.sizingCell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
         
-        [self.sizingCell removeConstraint:widthConstraint];
-
-        // It seems the width constraint isn't taken into account as the size returned is the label's fitting size
-        NSLog(@"A - %@", NSStringFromCGSize(itemSize));
-        
+        [self.sizingCell.topView removeConstraint:widthConstraint];
     }
     
-    // Try using adding a width constraint to the sizig cell and geting it's system layout size, relaying out before asking for the size
-    {
-        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.sizingCell attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:itemSize.width];
-        [self.sizingCell addConstraint:widthConstraint];
-
-        // Trying to re-layout after adding the constraint fails
-        [self.sizingCell setNeedsLayout];
-        [self.sizingCell layoutIfNeeded];
-        
-        itemSize = [self.sizingCell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-        
-        [self.sizingCell removeConstraint:widthConstraint];
-        
-        NSLog(@"B - %@", NSStringFromCGSize(itemSize));
-    }
-    
-    // Try sizeThatFits
-    {
-        itemSize = [self.sizingCell.contentView sizeThatFits:CGSizeMake(itemSize.width, CGFLOAT_MAX)];
-        NSLog(@"C - %@", NSStringFromCGSize(itemSize));
-    }
-
-    // Try using adding a width constraint to the sizig cell and using sizeThatFits
-    {
-        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.sizingCell attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:itemSize.width];
-        [self.sizingCell addConstraint:widthConstraint];
-        
-        itemSize = [self.sizingCell.contentView sizeThatFits:CGSizeMake(itemSize.width, CGFLOAT_MAX)];
-        
-        [self.sizingCell removeConstraint:widthConstraint];
-        
-        NSLog(@"D - %@", NSStringFromCGSize(itemSize));
-    }
-
-    // TODO - Change the layout so the item's width and height are correct for different screen sizes
-//     UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
-//     flowLayout.itemSize = itemSize;
+    // Change the layout so the item's width and height are correct for different screen sizes
+    UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
+    flowLayout.itemSize = itemSize;
+    flowLayout.minimumInteritemSpacing = cellSpacing;
+    flowLayout.minimumLineSpacing = cellSpacing;
     
     [self.collectionView registerNib:[TestCell nib] forCellWithReuseIdentifier:[TestCell reuseIdentifier]];
 }

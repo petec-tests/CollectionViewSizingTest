@@ -22,4 +22,11 @@
     return [[[self nib] instantiateWithOwner:nil options:nil] firstObject];
 }
 
+- (void)setBounds:(CGRect)bounds {
+    [super setBounds:bounds];
+    
+    // Fix the content view being wrong when our bounds are set
+    self.contentView.frame = CGRectMake(0, 0, bounds.size.width, bounds.size.height);
+}
+
 @end

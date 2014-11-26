@@ -42,6 +42,9 @@
                 <constraint firstAttribute="trailing" secondItem="dye-bo-xJ2" secondAttribute="trailing" id="jZU-VZ-kYa"/>
             </constraints>
             <size key="customSize" width="120" height="150"/>
+            <connections>
+                <outlet property="topView" destination="dye-bo-xJ2" id="TRj-3g-FIC"/>
+            </connections>
             <point key="canvasLocation" x="623" y="389"/>
         </collectionViewCell>
     </objects>

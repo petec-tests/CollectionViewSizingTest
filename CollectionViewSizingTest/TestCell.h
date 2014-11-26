@@ -10,6 +10,8 @@
 
 @interface TestCell : UICollectionViewCell
 
+@property (nonatomic, weak) IBOutlet UIView *topView;
+
 + (NSString*)reuseIdentifier;
 + (UINib*)nib;
 + (TestCell*)cell;
