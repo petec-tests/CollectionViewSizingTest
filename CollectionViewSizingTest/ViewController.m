@@ -35,16 +35,29 @@
     CGSize itemSize = CGSizeZero;
 
     itemSize.width = floorf( (self.view.bounds.size.width - (cellSpacing * (cellsPerRow + 1))) / cellsPerRow);
-    itemSize.height = 100;
     
-    // Adding a width constraint to a view in the sizing cell
+    // Adding a view with a width constraint to the sizing cell
     {
-        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.sizingCell.topView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:itemSize.width];
-        [self.sizingCell.topView addConstraint:widthConstraint];
+        // Create a view we can use to fix the cell's width
+        UIView *fixedWidthView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.sizingCell.contentView.bounds.size.width, 1)];
+        fixedWidthView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.sizingCell.contentView addSubview:fixedWidthView];
+ 
+        // Create constraints on the sizing view
+        NSDictionary *views = NSDictionaryOfVariableBindings(fixedWidthView);
+        NSDictionary *metrics = @{@"width" : @(itemSize.width), @"height" : @(1.0)};
         
+        NSArray *constraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[fixedWidthView(width)]|" options:0 metrics:metrics views:views];
+        [fixedWidthView.superview addConstraints:constraints];
+
+        constraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[fixedWidthView(height)]" options:0 metrics:metrics views:views];
+        [fixedWidthView.superview addConstraints:constraints];
+        
+        // Get the cell's size for the width
         itemSize = [self.sizingCell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
         
-        [self.sizingCell.topView removeConstraint:widthConstraint];
+        // Clean up
+        [fixedWidthView removeFromSuperview];
     }
     
     // Change the layout so the item's width and height are correct for different screen sizes
@@ -52,6 +65,7 @@
     flowLayout.itemSize = itemSize;
     flowLayout.minimumInteritemSpacing = cellSpacing;
     flowLayout.minimumLineSpacing = cellSpacing;
+    flowLayout.sectionInset = UIEdgeInsetsMake(0, cellSpacing, 0, cellSpacing);
     
     [self.collectionView registerNib:[TestCell nib] forCellWithReuseIdentifier:[TestCell reuseIdentifier]];
 }
