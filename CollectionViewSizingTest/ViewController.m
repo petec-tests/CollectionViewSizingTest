@@ -66,6 +66,24 @@
         
         NSLog(@"B - %@", NSStringFromCGSize(itemSize));
     }
+    
+    // Try sizeThatFits
+    {
+        itemSize = [self.sizingCell.contentView sizeThatFits:CGSizeMake(itemSize.width, CGFLOAT_MAX)];
+        NSLog(@"C - %@", NSStringFromCGSize(itemSize));
+    }
+
+    // Try using adding a width constraint to the sizig cell and using sizeThatFits
+    {
+        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.sizingCell attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:itemSize.width];
+        [self.sizingCell addConstraint:widthConstraint];
+        
+        itemSize = [self.sizingCell.contentView sizeThatFits:CGSizeMake(itemSize.width, CGFLOAT_MAX)];
+        
+        [self.sizingCell removeConstraint:widthConstraint];
+        
+        NSLog(@"D - %@", NSStringFromCGSize(itemSize));
+    }
 
     // TODO - Change the layout so the item's width and height are correct for different screen sizes
 //     UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
